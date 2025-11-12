@@ -1,0 +1,144 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mt-3">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">Danh sách các phòng</h3>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <table id="rooms-table" class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Mã phòng</th>
+                                <th class="text-center">Tên phòng</th>
+                                <th class="text-center">Loại phòng</th>
+                                <th class="text-center">Khu vực</th>
+                                <th class="text-center">Đơn giá ngày</th>
+                                <th class="text-center">Trạng thái</th>
+                                <th class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $("#rooms-table").DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '/api/rooms',
+            columns: [
+                {
+                    data: 'roomCode',
+                    render: function (data, type, row) {
+                        return `
+                        <div class="text-center">
+                            <span>${data}</span>
+                        </div>`;
+                    }
+                },
+                {
+                    data: 'description',
+                    render: function (data, type, row) {
+                        return `
+                        <div class="text-left">
+                            <span>${data}</span>
+                        </div>`;
+                    }
+                },
+                {
+                    data: 'type',
+                    render: function (data, type, row) {
+                        return `
+                        <div class="text-center">
+                            <span>${data == 'double' ? 'Phòng đôi' : data == 'single' ? 'Phòng đơn' : 'Phòng VIP'}</span>
+                        </div>`;
+                    }
+                },
+                {
+                    data: 'area',
+                    render: function (data, type, row) {
+                        return `
+                        <div class="text-center">
+                            <span>${data.description}</span>
+                        </div>`;
+                    }
+                },
+                {
+                    data: 'price',
+                    render: function (data, type, row) {
+                        let amount = parseFloat(data);
+                        let amountString = '0 ₫';
+                        if (!isNaN(amount)) {
+                            amountString = new Intl.NumberFormat('vi-VN', {
+                                style: 'currency',
+                                currency: 'VND',
+                                minimumFractionDigits: 0
+                            }).format(amount);
+                        }
+
+                        return `
+                        <div class="text-center">
+                            <span>${amountString}</span>
+                        </div>`;
+                    }
+                },
+                {
+                    data: 'status',
+                    render: function (data, type, row) {
+                        return `
+                        <div class="text-center">
+                            <span class="${data === 'available' ? 'text-success' : 'text-danger'}">${data === 'available' ? 'Hoạt động' : 'Bảo trì'}</span>
+                        </div>`;
+                    }
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return `
+                        <div class="text-center">
+                            <a href="/rooms/${row._id}" class="btn btn-primary btn-sm">Chỉnh sửa</a>
+                        </div>`;
+                    }
+                }
+            ],
+            columnDefs: [
+                { width: "120px", targets: 0 },
+                { width: "100px", targets: 6, orderable: false }
+            ],
+            autoWidth: true,
+            responsive: true,
+            autoWidth: false,
+            language: {
+                processing: "Đang xử lý...",
+                search: "Tìm kiếm:",
+                lengthMenu: "Hiển thị _MENU_ bản ghi",
+                info: "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoEmpty: "Hiển thị 0 đến 0 của 0 bản ghi",
+                infoFiltered: "(lọc từ _MAX_ bản ghi)",
+                infoPostFix: "",
+                loadingRecords: "Đang tải...",
+                zeroRecords: "Không tìm thấy kết quả",
+                emptyTable: "Không có dữ liệu trong bảng",
+                paginate: {
+                    first: "Đầu",
+                    previous: "Trước",
+                    next: "Sau",
+                    last: "Cuối"
+                },
+                aria: {
+                    sortAscending: ": sắp xếp tăng dần",
+                    sortDescending: ": sắp xếp giảm dần"
+                }
+            }
+        });
+    });
+</script>

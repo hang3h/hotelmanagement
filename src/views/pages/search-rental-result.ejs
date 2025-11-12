@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Tra cứu đặt phòng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/assets/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/adminlte.css?version=1.0.1">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="search-rental-result">
+            <div class="mb-4 mt-5">
+                <h1 class="text-center">Kết quả tra cứu đặt phòng</h1>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <% if (!data || data.length == 0) { %>
+                    <div class="alert alert-warning">
+                        Không tìm thấy kết quả nào phù hợp với từ khóa bạn đã nhập.
+                    </div>
+                    <% } %>
+                    <% data.forEach(rental=> { %>
+                    <div class="info-box <%= rental.status == 'active' ? 'bg-success' : 'bg-info' %>">
+                        <span class="info-box-icon"><i class="far <%= rental.status == 'active' ? 'fa-thumbs-up' : 'fa-bookmark' %>"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Mã thuê phòng: <b><%= rental.rentalCode %></b></span>
+                            <span class="info-box-text">Khu <%= rental.areaCode %> - Tầng: <%= rental.floor %> - Phòng: <%= rental.roomCode %></span>
+                            <span class="info-box-text">Trạng thái:  <b><%= rental.status == 'active' ? 'Đang thuê' : 'Đặt trước' %></b></span>
+
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 70%"></div>
+                            </div>
+
+                            <span class="info-box-text">Khách hàng: <b><%= rental.customerName %></b></span>
+                            <span class="info-box-text">Số điện thoại: <%= rental.customerPhoneFormatted %> &nbsp;&nbsp;&nbsp;&nbsp; Số CCCD: <%= rental.customerIdCard %> </span>
+                            <span class="progress-description">Thời gian thuê: <b><%= (new Date(rental.startDate)).toLocaleDateString() %> đến <%= (new Date(rental.endDate)).toLocaleDateString() %></b></span>
+                            <span class="info-box-text">Tổng tiền: <b class="text-warning"><%= rental.totalPriceFormatted %></b>  &nbsp;&nbsp;&nbsp;&nbsp; Đã thanh toán: <b><%= rental.amountPaidFormatted %></b> &nbsp;&nbsp;&nbsp;&nbsp; Còn lại: <b style="color: #cb3d3d;"><%= rental.remainingAmountFormatted %></b></span>
+                        </div>
+                    </div>
+                    <% }) %>
+
+                    <a href="/search-rental" class="btn btn-block btn-default">Trở về</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/assets/plugins/jquery/jquery.min.js"></script>
+    <script src="/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/adminlte.min.js"></script>
+</body>
+
+</html>

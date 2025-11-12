@@ -1,0 +1,117 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mt-3">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title"><i class="fas fa-users mr-1"></i>Danh sách các tài khoản</h3>
+                        <a href="/users/add" class="btn btn-success btn-sm">Tạo tài khoản mới</a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <table id="users-table" class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-left">Tên đăng nhập</th>
+                                <th class="text-left">Họ tên</th>
+                                <th class="text-left">Số điện thoại</th>
+                                <th class="text-left">Email</th>
+                                <th class="text-left">Vai trò</th>
+                                <th class="text-center">Ngày cập nhật</th>
+                                <th class="text-center">Trạng thái</th>
+                                <th class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $("#users-table").DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '/api/users',
+            columns: [
+                { data: 'username' },
+                { data: 'fullname' },
+                { data: 'phonenumberFormatted' },
+                { data: 'email' },
+                {
+                    data: 'role',
+                    render: function (data, type, row) {
+                        return `
+                        <div class="text-center">
+                            <span>${data == 'admin' ? 'Administrator' : data == 'director' ? 'Ban giám đốc' : data == 'manager' ? 'Quản lý khách sạn' : data == 'receptionist' ? 'Tiếp tân ' + row.areaName : data = 'guest' ? 'Khách hàng' : '' }</span>
+                        </div>`;
+                    }
+                },
+                {
+                    data: 'updatedAt',
+                    render: function (data, type, row) {
+                        const updateAt = data ? new Date(data).toLocaleString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '') : '';
+                        return `
+                        <div class="text-center">
+                            <span>${updateAt}</span>
+                        </div>`;
+                    }
+                },
+                {
+                    data: 'status',
+                    render: function (data, type, row) {
+                        return `
+                        <div class="text-center">
+                            <span class="${data === 1 ? 'text-success' : 'text-danger'}">${data === 1 ? 'Active' : 'Inactive'}</span>
+                        </div>`;
+                    }
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return `
+                        <div class="text-center">
+                            <a href="/users/${row.id}" class="btn btn-primary btn-sm">Chỉnh sửa</a>
+                        </div>`;
+                    }
+                }
+            ],
+            columnDefs: [
+                { width: "140px", targets: 0 },
+                { width: "110px", targets: 2 },
+                { width: "110px", targets: 5 },
+                { width: "100px", targets: 6 },
+                { width: "100px", targets: 7, orderable: false }
+            ],
+            autoWidth: true,
+            responsive: true,
+            autoWidth: false,
+            language: {
+                processing: "Đang xử lý...",
+                search: "Tìm kiếm:",
+                lengthMenu: "Hiển thị _MENU_ bản ghi",
+                info: "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoEmpty: "Hiển thị 0 đến 0 của 0 bản ghi",
+                infoFiltered: "(lọc từ _MAX_ bản ghi)",
+                infoPostFix: "",
+                loadingRecords: "Đang tải...",
+                zeroRecords: "Không tìm thấy kết quả",
+                emptyTable: "Không có dữ liệu trong bảng",
+                paginate: {
+                    first: "Đầu",
+                    previous: "Trước",
+                    next: "Sau",
+                    last: "Cuối"
+                },
+                aria: {
+                    sortAscending: ": sắp xếp tăng dần",
+                    sortDescending: ": sắp xếp giảm dần"
+                }
+            }
+        });
+    });
+</script>

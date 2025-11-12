@@ -1,0 +1,141 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mt-3">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">Cập nhật thông tin phòng</h3>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <form role="form" id="room-info">
+                        <div class="form-group">
+                            <label for="roomCode">Mã phòng</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="roomCode" maxlength="128" disabled value="<%= data.roomCode %>">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="area">Khu vực</label>
+                            <div class="input-group">
+                                <input type="text" name="area" class="form-control" id="area" maxlength="128" disabled value="<%= data.area.description %>">
+                                <input type="hidden" name="areaid" class="form-control" id="areaid" maxlength="128" disabled value="<%= data.area._id %>">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="floor">Tầng số</label>
+                            <div class="input-group">
+                                <input type="text" name="floor" class="form-control" id="floor" disabled value="<%= data.floor %>">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Mô tả</label>
+                            <div class="input-group">
+                                <input type="text" name="description" class="form-control" id="description" maxlength="128" value="<%= data.description %>">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="notes">Ghi chú</label>
+                            <textarea name="notes" class="form-control" id="notes" rows="2"><%= data.note %></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="price">Đơn giá ngày</label>
+                            <div class="input-group">
+                                <input type="number" name="price" class="form-control" id="price" autocomplete="price" step="1000" value="<%= data.price %>" placeholder="Đơn giá ngày">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status">Trạng thái</label>
+                            <div class="input-group">
+                                <input type="checkbox" name="status" id="status" data-bootstrap-switch <%=data.status=='available' ? 'checked' : '' %>>
+                            </div>
+                        </div>
+
+                        <div class="form-group text-center">
+                            <button class="btn btn-primary pl-5 pr-5">Lưu</button>
+                        </div>
+
+                    </form>
+
+                    <a href="/rooms"><i class="fa fa-chevron-left"></i> Trở về</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('input[data-bootstrap-switch]').bootstrapSwitch({
+            onText: 'Hoạt động',
+            offText: 'Bảo trì',
+            onColor: 'success',
+            offColor: 'danger',
+            size: 'small'
+        });
+
+        $('#room-info').validate({
+            rules: {
+                price: {
+                    required: true
+                }
+            },
+            messages: {
+                price: {
+                    required: "Đơn giá không được để trống"
+                }
+            },
+            errorElement: 'span',
+            errorPlacement: function (error, element) {
+                error.addClass('invalid-feedback');
+                element.closest('.form-group').append(error);
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass('is-invalid');
+            }
+        });
+
+        $('#room-info').on('submit', function (e) {
+            e.preventDefault();
+            if (!$('#room-info').valid())
+                return;
+
+            const data = {
+                id: '<%= data._id %>',
+                area: $('#areaid').val(),
+                floor: Number($('#floor').val()) ?? '',
+                description: $('#description').val() ?? '',
+                note: $('#notes').val() ?? '',
+                price: $('#price').val() ?? 0,
+                status: $('#status').prop('checked') ? 'available' : 'maintenance'
+            };
+
+            $.ajax({
+                url: '/api/rooms/<%= data._id %>',
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (res) {
+                    if (res.success) {
+                        Toast.fire({ icon: 'success', title: 'Cập nhật thông tin thành công!' }).then(() => window.location.href = "/rooms");
+                    } else {
+                        Toast.fire({ icon: 'error', title: res?.message || 'Cập nhật thất bại, vui lòng thử lại sau!' });
+                    }
+                },
+                error: function (err) {
+                    Toast.fire({ icon: 'error', title: err.responseJSON?.message || 'Cập nhật thất bại, vui lòng thử lại sau!' });
+                }
+            });
+        });
+    });
+</script>
