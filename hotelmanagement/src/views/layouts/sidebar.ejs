@@ -1,0 +1,74 @@
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <div class="sidebar">
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="/assets/img/AdminLTELogo.png" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="/current-users/<%= currentUser.id %>" class="d-block"><%= currentUser.fullname %></a>
+            </div>
+        </div>
+
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <% if (['admin', 'director', 'manager', 'receptionist'].includes(currentUser.role)) { %>
+                <li class="nav-item">
+                    <a href="/dashboard" class="nav-link <%= (typeof activeMenu !== 'undefined' && activeMenu === 'dashboard') ? 'active' : '' %>">
+                        <i class="nav-icon fas fa-th"></i>
+                        <p> Trạng thái các phòng </p>
+                    </a>
+                </li>
+                <% } %>
+
+                <% if (['admin', 'director', 'manager', 'receptionist'].includes(currentUser.role)) { %>
+                <li class="nav-item">
+                    <a href="/rentals" class="nav-link <%= (typeof activeMenu !== 'undefined' && activeMenu === 'rentals') ? 'active' : '' %>">
+                        <i class="nav-icon fas fa-address-card"></i>
+                        <p> Quản lý đặt phòng </p>
+                    </a>
+                </li>
+                <% } %>
+
+                <% if (['admin', 'director'].includes(currentUser.role)) { %>
+                <li class="nav-item">
+                    <a href="/rooms" class="nav-link <%= (typeof activeMenu !== 'undefined' && activeMenu === 'rooms') ? 'active' : '' %>">
+                        <i class="nav-icon fas fa-building"></i>
+                        <p> Cập nhật giá phòng </p>
+                    </a>
+                </li>
+                <% } %>
+                <% if (['admin', 'director'].includes(currentUser.role)) { %>
+                <li class="nav-item">
+                    <a href="/users" class="nav-link <%= (typeof activeMenu !== 'undefined' && activeMenu === 'users') ? 'active' : '' %>">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p> Quản lý tài khoản </p>
+                    </a>
+                </li>
+                <% } %>
+
+                <% if (['admin', 'director', 'manager'].includes(currentUser.role)) { %>
+                <li class="nav-item has-treeview <%= (typeof activeMenu !== 'undefined' && (activeMenu === 'statsMonth' || activeMenu === 'statsYear')) ? 'menu-open' : '' %>">
+                    <a href="#" class="nav-link <%= (typeof activeMenu !== 'undefined' && (activeMenu === 'statsMonth' || activeMenu === 'statsYear')) ? 'active' : '' %>">
+                        <i class="nav-icon fas fa-chart-pie"></i>
+                        <p> Thống kê doanh số <i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/stat-month" class="nav-link pl-4 <%= (typeof activeMenu !== 'undefined' && activeMenu === 'statsMonth') ? 'active' : '' %>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Thống kê theo tháng</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/stat-year" class="nav-link pl-4 <%= (typeof activeMenu !== 'undefined' && activeMenu === 'statsYear') ? 'active' : '' %>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p> Thống kê theo năm</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <% } %>
+            </ul>
+        </nav>
+    </div>
+</aside>

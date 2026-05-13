@@ -1,0 +1,162 @@
+<div class="container-fluid">
+  <div class="row">
+    <section class="col-12">
+      <div class="card mt-2" style="max-width: 1180px;">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-th mr-1"></i>
+            Trạng thái các phòng hiện tại
+          </h3>
+          <div class="card-tools">
+            <ul class="nav nav-pills ml-auto">
+              <% if (['admin', 'director', 'manager'].includes(currentUser.role) || (currentUser.role == 'receptionist' && currentUser.areaCode == 'A')) { %>
+              <li class="nav-item">
+                <a class="nav-link" href="#area-a" data-toggle="tab">Khu A</a>
+              </li>
+              <% } %>
+
+              <% if (['admin', 'director', 'manager'].includes(currentUser.role) || (currentUser.role == 'receptionist' && currentUser.areaCode == 'B')) { %>
+              <li class="nav-item">
+                <a class="nav-link" href="#area-b" data-toggle="tab">Khu B</a>
+              </li>
+              <% } %>
+
+              <% if (['admin', 'director', 'manager'].includes(currentUser.role) || (currentUser.role == 'receptionist' && currentUser.areaCode == 'C')) { %>
+              <li class="nav-item">
+                <a class="nav-link" href="#area-c" data-toggle="tab">Khu C</a>
+              </li>
+              <% } %>
+            </ul>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="tab-content p-0">
+            <% if (['admin', 'director', 'manager'].includes(currentUser.role) || (currentUser.role == 'receptionist' && currentUser.areaCode == 'A')) { %>
+            <div class="chart tab-pane" id="area-a" style="position: relative; height: auto;">
+              <h3 class="text-left mb-4"><b>KHU VỰC A</b></h3>
+
+              <div class="row">
+                <div class="col-sm-3 col-xs-4 d-flex room-status-description">
+                  <div class="info-box room-info-box">
+                    <span class="info-box-icon available"> </span>
+                  </div>
+                  <label>Phòng đang trống</label>
+                </div>
+
+                <div class="col-sm-3 col-xs-4 d-flex room-status-description">
+                  <div class="info-box room-info-box">
+                    <span class="info-box-icon occupied"> </span>
+                  </div>
+                  <label>Phòng đang được thuê</label>
+                </div>
+
+                <div class="col-sm-3 col-xs-4 d-flex room-status-description">
+                  <div class="info-box room-info-box">
+                    <span class="info-box-icon maintenance"> </span>
+                  </div>
+                  <label>Phòng đang đang bảo trì</label>
+                </div>
+              </div>
+
+              <div class="grid-area grid-area-a">
+                <% data.areaA.forEach(room=> { %>
+                  <div class="info-box room-info-box">
+                    <span class="info-box-icon <%= room.status %>" title="<%= room.currentRental ? `Khách: ${room.currentRental.customerName} | Từ: ${new Date(room.currentRental.startDate).toLocaleDateString()} - ${new Date(room.currentRental.endDate).toLocaleDateString()}` : room.status=='maintenance' ? 'Phòng đang bảo trì' : 'Phòng trống' %>">
+                      <%= room.roomCode %><br>
+                    </span>
+                  </div>
+                  <% }) %>
+              </div>
+            </div>
+            <% } %>
+
+            <% if (['admin', 'director', 'manager'].includes(currentUser.role) || (currentUser.role == 'receptionist' && currentUser.areaCode == 'B')) { %>
+            <div class="chart tab-pane" id="area-b" style="position: relative; height: auto;">
+              <h3 class="text-left mb-4"><b>KHU VỰC B</b></h3>
+
+              <div class="row">
+                <div class="col-sm-3 col-xs-4 d-flex room-status-description">
+                  <div class="info-box room-info-box">
+                    <span class="info-box-icon available"> </span>
+                  </div>
+                  <label>Phòng đang trống</label>
+                </div>
+
+                <div class="col-sm-3 col-xs-4 d-flex room-status-description">
+                  <div class="info-box room-info-box">
+                    <span class="info-box-icon occupied"> </span>
+                  </div>
+                  <label>Phòng đang được thuê</label>
+                </div>
+
+                <div class="col-sm-3 col-xs-4 d-flex room-status-description">
+                  <div class="info-box room-info-box">
+                    <span class="info-box-icon maintenance"> </span>
+                  </div>
+                  <label>Phòng đang đang bảo trì</label>
+                </div>
+              </div>
+
+              <div class="grid-area grid-area-b">
+                <% data.areaB.forEach(room=> { %>
+                  <div class="info-box room-info-box">
+                    <span class="info-box-icon <%= room.status %>" title="<%= room.currentRental ? `Khách: ${room.currentRental.customerName} | Từ: ${new Date(room.currentRental.startDate).toLocaleDateString()} - ${new Date(room.currentRental.endDate).toLocaleDateString()}` : room.status=='maintenance' ? 'Phòng đang bảo trì' : 'Phòng trống' %>">
+                      <%= room.roomCode %><br>
+                    </span>
+                  </div>
+                  <% }) %>
+              </div>
+            </div>
+            <% } %>
+
+            <% if (['admin', 'director', 'manager'].includes(currentUser.role) || (currentUser.role == 'receptionist' && currentUser.areaCode == 'C')) { %>
+            <div class="chart tab-pane" id="area-c" style="position: relative; height: auto;">
+              <h3 class="text-left mb-4"><b>KHU VỰC C</b></h3>
+
+              <div class="row">
+                <div class="col-sm-3 col-xs-4 d-flex room-status-description">
+                  <div class="info-box room-info-box">
+                    <span class="info-box-icon available"> </span>
+                  </div>
+                  <label>Phòng đang trống</label>
+                </div>
+
+                <div class="col-sm-3 col-xs-4 d-flex room-status-description">
+                  <div class="info-box room-info-box">
+                    <span class="info-box-icon occupied"> </span>
+                  </div>
+                  <label>Phòng đang được thuê</label>
+                </div>
+
+                <div class="col-sm-3 col-xs-4 d-flex room-status-description">
+                  <div class="info-box room-info-box">
+                    <span class="info-box-icon maintenance"> </span>
+                  </div>
+                  <label>Phòng đang đang bảo trì</label>
+                </div>
+              </div>
+
+              <div class="grid-area grid-area-c">
+                <% data.areaC.forEach(room=> { %>
+                  <div class="info-box room-info-box">
+                    <span class="info-box-icon <%= room.status %>" title="<%= room.currentRental ? `Khách: ${room.currentRental.customerName} | Từ: ${new Date(room.currentRental.startDate).toLocaleDateString()} - ${new Date(room.currentRental.endDate).toLocaleDateString()}` : room.status=='maintenance' ? 'Phòng đang bảo trì' : 'Phòng trống' %>">
+                      <%= room.roomCode %><br>
+                    </span>
+                  </div>
+                  <% }) %>
+              </div>
+            </div>
+            <% } %>
+          </div>
+        </div>
+    </section>
+  </div>
+
+</div>
+
+<script>
+  $(function() {
+    $('.card-tools .nav-link').first().addClass('active');
+    $('.card-body .tab-pane').first().addClass('active');
+  });
+</script>

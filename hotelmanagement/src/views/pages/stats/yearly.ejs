@@ -1,0 +1,139 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3 class="card-title">Thống kê doanh thu theo năm</h3>
+                </div>
+                <div class="card-body">
+                    <div class="summary">
+                        <div style="display: flex; align-items: center; max-width: 300px; margin-bottom: 0.5rem;">
+                            <label for="selectedDate" style="width: 145px; margin-bottom: 2px;">Chọn năm: </label>
+                            <div class="input-group date" id="statistics-year-picker" data-target-input="nearest">
+                                <input type="text" id="selectedDate" class="form-control form-control-sm datetimepicker-input" data-target="#statistics-year-picker" placeholder="Chọn năm" style="margin: 0;" />
+                                <div class="input-group-append" data-target="#statistics-year-picker" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar-alt"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="summary-item-sum">
+                            <h6 class="d-inline">Tổng doanh thu trong năm: </h6>
+                            <p class="d-inline" style="font-weight: bold;"></p>
+                        </div>
+                        <div class="summary-item-count">
+                            <h6 class="d-inline">Tổng số phòng được thuê: </h6>
+                            <p class="d-inline" style="font-weight: bold;"></p>
+                        </div>
+                    </div>
+                    <div class="chart">
+                        <canvas id="barChart" style="min-height: 400px; height: 400px; max-height: 400px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    let barChart = null;
+
+    $(document).ready(function () {
+
+        const now = moment();
+        $('#statistics-year-picker').datetimepicker({
+            format: 'YYYY',
+            viewMode: 'years',
+            defaultDate: now
+        });
+
+        $('#statistics-year-picker').on('change.datetimepicker', function (e) {
+            if (!e.date) return;
+            const selectedDate = e.date.toDate();
+            loadYearlyStatistics(selectedDate);
+        });
+
+        loadYearlyStatistics(now);
+    });
+
+    function loadYearlyStatistics(selectedDate) {
+        const postData = { selectedDate: selectedDate };
+
+        if (barChart) {
+            barChart.destroy();
+        }
+
+        $.ajax({
+            url: '/api/stats/get-data-stat-year',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(postData),
+            success: function (data) {
+                $('.summary-item-sum').find('p').text(data.totalRevenueFormatted);
+                $('.summary-item-count').find('p').text(data.totalRented + ' phòng');
+
+                $('#barChart').show();
+                var areaChartData = {
+                    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+                    datasets: [
+                        {
+                            label: 'Doanh thu (VNĐ)',
+                            backgroundColor: 'rgba(60,141,188,0.9)',
+                            borderColor: 'rgba(60,141,188,0.8)',
+                            pointRadius: false,
+                            pointColor: '#3b8bba',
+                            pointStrokeColor: 'rgba(60,141,188,1)',
+                            pointHighlightFill: '#fff',
+                            pointHighlightStroke: 'rgba(60,141,188,1)',
+                            data: data.monthlyRevenue
+                        }
+                    ]
+                };
+
+                var barChartCanvas = $('#barChart').get(0).getContext('2d')
+                var barChartData = jQuery.extend(true, {}, areaChartData);
+                var temp0 = areaChartData.datasets[0];
+                barChartData.datasets[0] = temp0;
+
+                var barChartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    datasetFill: false,
+                    tooltips: {
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                                const value = tooltipItem.yLabel || 0;
+                                return new Intl.NumberFormat('vi-VN').format(value) + ' VNĐ';
+                            }
+                        }
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                callback: function (value, index, values) {
+                                    return new Intl.NumberFormat('vi-VN').format(value);
+                                }
+                            }
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 45,
+                                minRotation: 0
+                            }
+                        }]
+                    }
+                };
+
+                barChart = new Chart(barChartCanvas, {
+                    type: 'bar',
+                    data: barChartData,
+                    options: barChartOptions
+                });
+            },
+            error: function (err) {
+                Toast.fire({ icon: 'error', title: err.responseJSON?.message || 'Load data thống kê thất bại, vui lòng thử lại sau!' });
+            }
+        });
+    }
+</script>

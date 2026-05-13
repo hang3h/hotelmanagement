@@ -1,0 +1,112 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3 class="card-title">Thống kê doanh thu tháng theo loại phòng</h3>
+                </div>
+                <div class="card-body">
+                    <div class="summary">
+                        <div style="display: flex; align-items: center; max-width: 300px; margin-bottom: 0.5rem;">
+                            <label for="selectedDate" style="width: 145px; margin-bottom: 2px;">Chọn tháng: </label>
+                            <div class="input-group date" id="statistics-month-picker" data-target-input="nearest">
+                                <input type="text" id="selectedDate" class="form-control form-control-sm datetimepicker-input" data-target="#statistics-month-picker" placeholder="Chọn ngày" style="margin: 0;" />
+                                <div class="input-group-append" data-target="#statistics-month-picker" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar-alt"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="summary-item-sum">
+                            <h6 class="d-inline">Tổng doanh thu trong tháng: </h6>
+                            <p class="d-inline" style="font-weight: bold;"></p>
+                        </div>
+                        <div class="summary-item-count">
+                            <h6 class="d-inline">Tổng số phòng được thuê: </h6>
+                            <p class="d-inline" style="font-weight: bold;"></p>
+                        </div>
+                    </div>
+                    <div class="chart">
+                        <canvas id="donutChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    let donutChart = null;
+
+    $(document).ready(function () {
+        const now = moment();
+        $('#statistics-month-picker').datetimepicker({
+            format: 'MM/YYYY',
+            viewMode: 'months',
+            defaultDate: now
+        });
+
+        $('#statistics-month-picker').on('change.datetimepicker', function (e) {
+            if (!e.date) return;
+            const selectedDate = e.date.toDate();
+            loadMonthlyStatistics(selectedDate);
+        });
+
+        loadMonthlyStatistics(now);
+    });
+
+    function loadMonthlyStatistics(selectedDate) {
+        const postData = { selectedDate: selectedDate };
+
+        if (donutChart) {
+            donutChart.destroy();
+        }
+
+        $.ajax({
+            url: '/api/stats/get-data-stat-month',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(postData),
+            success: function (data) {
+                $('.summary-item-sum').find('p').text(data.totalRevenueFormatted);
+                $('.summary-item-count').find('p').text(data.totalRented + ' phòng');
+
+                var donutChartCanvas = $('#donutChart').get(0).getContext('2d');
+                var donutData = {
+                    labels: ['Phòng đơn', 'Phòng đôi', 'Phòng VIP'],
+                    datasets: [{
+                        data: [
+                            data.byRoomType.single,
+                            data.byRoomType.double,
+                            data.byRoomType.vip
+                        ],
+                        backgroundColor: ['#f56954', '#00a65a', '#f39c12']
+                    }]
+                };
+
+                donutChart = new Chart(donutChartCanvas, {
+                    type: 'doughnut',
+                    data: donutData,
+                    options: {
+                        maintainAspectRatio: false,
+                        responsive: true,
+                        tooltips: {
+                            callbacks: {
+                                label: function (tooltipItem, data) {
+                                    const dataset = data.datasets[tooltipItem.datasetIndex];
+                                    const label = data.labels[tooltipItem.index] || '';
+                                    const value = dataset.data[tooltipItem.index] || 0;
+                                    const formattedValue = new Intl.NumberFormat('vi-VN').format(value);
+                                    return `${label}: ${formattedValue} VNĐ`;
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+            error: function (err) {
+                Toast.fire({ icon: 'error', title: err.responseJSON?.message || 'Load data thống kê thất bại, vui lòng thử lại sau!' });
+            }
+        });
+    }
+</script>

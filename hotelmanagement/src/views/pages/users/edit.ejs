@@ -1,0 +1,254 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mt-3">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">Cập nhật tài khoản</h3>
+                        <% if (data._id.toString() !== currentUser.id.toString()) { %> <button id="btn-show-delete-user" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modal-delete">Xóa tài khoản</button><% } %>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <form role="form" id="user-info">
+                        <div class="form-group">
+                            <label for="username">Tên đăng nhập</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="username" maxlength="128" disabled value="<%= data.username %>">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fullname">Họ và tên</label>
+                            <div class="input-group">
+                                <input type="text" name="fullname" class="form-control" id="fullname" maxlength="128" autocomplete="name" value="<%= data.fullname %>" placeholder=" Họ và tên">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phonenumber">Số điện thoại</label>
+                            <div class="input-group">
+                                <input type="tel" name="phonenumber" class="form-control" id="phonenumber" autocomplete="phonenumber" value="<%= data.phonenumber %>" placeholder="Số điện thoại">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <div class="input-group">
+                                <input type="email" name="email" class="form-control" id="email" autocomplete="email" value="<%= data.email %>" placeholder="Email">
+                            </div>
+                        </div>
+                        <% if (data._id.toString() !== currentUser.id.toString()) { %> 
+                        <div class="form-group">
+                            <label for="role">Vai trò</label>
+                            <div class="input-group">
+                                <select class="form-control" name="role" id="role">
+                                    <option value="admin" <%=data.role=='admin' ? 'selected' : '' %>>Administrator</option>
+                                    <option value="director" <%=data.role=='director' ? 'selected' : '' %>>Ban giám đốc</option>
+                                    <option value="manager" <%=data.role=='manager' ? 'selected' : '' %>>Quản lý khách sạn</option>
+                                    <option value="receptionist" <%=data.role=='receptionist' ? 'selected' : '' %>>Tiếp tân</option>
+                                    <option value="guest" <%=data.role=='guest' ? 'selected' : '' %>>Khách hàng</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="area-form-group" style="display: none;">
+                            <label for="area">Khu vực</label>
+                            <div class="input-group">
+                                <select class="form-control" name="area" id="area">
+                                    <option value="A" <%=data.area?.areaCode=='A' ? 'selected' : '' %>>Khu vực A</option>
+                                    <option value="B" <%=data.area?.areaCode=='B' ? 'selected' : '' %>>Khu vực B</option>
+                                    <option value="C" <%=data.area?.areaCode=='C' ? 'selected' : '' %>>Khu vực C</option>
+                                </select>
+                            </div>
+                        </div>
+                        <% } %>
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" id="changePassword">
+                                <label for="changePassword" class="custom-control-label">Đổi mật khẩu</label>
+                            </div>
+                        </div>
+                        <div class="form-group passwordFields" style="display: none;">
+                            <label for="password">Mật khẩu</label>
+                            <div class="input-group">
+                                <input type="password" name="password" class="form-control" id="password" placeholder="Mật khẩu">
+                            </div>
+                        </div>
+                        <div class="form-group passwordFields" style="display: none;">
+                            <label for="repassword">Nhập lại mật khẩu</label>
+                            <div class="input-group">
+                                <input type="password" name="repassword" class="form-control" id="repassword" placeholder="Nhập lại mật khẩu">
+                            </div>
+                        </div>
+                        <% if (data._id.toString() !== currentUser.id.toString()) { %> 
+                        <div class="form-group">
+                            <label for="status">Trạng thái</label>
+                            <div class="input-group">
+                                <input type="checkbox" name="status" id="status" data-bootstrap-switch <%=data.status==1 ? 'checked' : '' %>>
+                            </div>
+                        </div>
+                        <% } %>
+                        <div class="form-group text-center">
+                            <button class="btn btn-primary pl-5 pr-5">Lưu</button>
+                        </div>
+
+                    </form>
+
+                    <a href="/users"><i class="fa fa-chevron-left"></i> Trở về</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-delete">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Xác nhận xóa tài khoản</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc muốn xóa tài khoản <b> <%= data.username %></b></p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Trở về</button>
+                <button type="button" id="btn-delete-user" class="btn btn-danger pl-4 pr-4">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#area-form-group").toggle($("#role").val() === "receptionist");
+        $("#role").on("change", function(){
+            $("#area-form-group").toggle($("#role").val() === "receptionist");
+        });
+
+        $('input[data-bootstrap-switch]').bootstrapSwitch({
+            onText: 'Active',
+            offText: 'Inactive',
+            onColor: 'success',
+            offColor: 'danger',
+            size: 'small'
+        });
+
+        $('#changePassword').on('change', function () {
+            if ($(this).is(':checked')) {
+                $('.passwordFields').slideDown();
+            } else {
+                $('.passwordFields').slideUp();
+                $('.passwordFields input').val('');
+            }
+        });
+
+        $('#user-info').validate({
+            rules: {
+                username: {
+                    required: true,
+                    maxlength: 128
+                },
+                email: {
+                    email: true,
+                },
+                password: {
+                    required: true,
+                    minlength: 6
+                },
+                repassword: {
+                    required: true,
+                    equalTo: '#password'
+                }
+            },
+            messages: {
+                username: {
+                    required: "Tên đăng nhập không được để trống",
+                    maxlength: "Tên đăng nhập không được vượt quá 128 ký tự"
+                },
+                email: {
+                    email: "Vui lòng nhập đúng định dạng email"
+                },
+                password: {
+                    required: "Mật khẩu không được để trống",
+                    minlength: "Mật khẩu phải chứa ít nhất 6 ký tự",
+                    maxlength: "Mật khẩu không được vượt quá 128 ký tự"
+                },
+                repassword: {
+                    required: "Vui lòng nhập lại mật khẩu",
+                    equalTo: "Mật khẩu nhập lại không khớp"
+                }
+            },
+            errorElement: 'span',
+            errorPlacement: function (error, element) {
+                error.addClass('invalid-feedback');
+                element.closest('.form-group').append(error);
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass('is-invalid');
+            }
+        });
+
+        $('#user-info').on('submit', function (e) {
+            e.preventDefault();
+            if (!$('#user-info').valid())
+                return;
+
+            const data = {
+                id: '<%= data._id %>',
+                fullname: $('#fullname').val(),
+                phonenumber: $('#phonenumber').val(),
+                email: $('#email').val(),
+                area: $('#role').val() != 'receptionist' ? null : $('#area').val(),
+                password: $('#password').val(),
+                repassword: $('#repassword').val()
+            };
+
+            var isCurrentUser = <%= data._id.toString() == currentUser.id.toString() ? 'true' : 'false' %>;
+
+            if (!isCurrentUser) {
+                data.status = $('#status').prop('checked') ? 1 : 0;
+                data.role = $('#role').val();
+            }
+
+            $.ajax({
+                url: '/api/users/<%= data._id %>',
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (res) {
+                    if (res.success) {
+                        Toast.fire({ icon: 'success', title: 'Cập nhật tài khoản thành công!' }).then(() => window.location.href = '<%= data._id == currentUser.id ? "/" : "/users"%>');
+                    } else {
+                        Toast.fire({ icon: 'error', title: res?.message || 'Cập nhật tài khoản thất bại, vui lòng thử lại sau!' });
+                    }
+                },
+                error: function (err) {
+                    Toast.fire({ icon: 'error', title: err.responseJSON?.message || 'Cập nhật tài khoản thất bại, vui lòng thử lại sau!' });
+                }
+            });
+        });
+
+        $('#btn-delete-user').on('click', function () {
+            $.ajax({
+                url: '/api/users/' + '<%= data._id %>',
+                method: 'DELETE',
+                success: function (res) {
+                    if (res.success) {
+                        $('#modal-delete').modal('hide');
+                        Toast.fire({ icon: 'success', title: 'Xóa tài khoản thành công!' }).then(() => window.location.href = '/users');
+                    } else {
+                        Toast.fire({ icon: 'error', title: res?.message || 'Xóa tài khoản thất bại, vui lòng thử lại sau!' });
+                    }
+                },
+                error: function (err) {
+                    Toast.fire({ icon: 'error', title: err.responseJSON?.message || 'Xóa tài khoản thất bại, vui lòng thử lại sau!' });
+                }
+            });
+        });
+    });
+</script>
